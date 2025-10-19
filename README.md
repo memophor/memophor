@@ -1,4 +1,4 @@
-# Memophor Open Source Hub
+# Memophor — The Federated Knowledge Mesh for AI
 
 Memophor is building an open knowledge platform that keeps organizational intelligence discoverable, contextual, and governed across time.  
 This repository is the entry point for the Memophor open-source ecosystem: it curates project documentation, highlights active codebases, and explains how to get involved.
