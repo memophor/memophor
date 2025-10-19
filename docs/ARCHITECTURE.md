@@ -27,53 +27,68 @@ Together these layers enable long-term, context-aware memory for AI agents while
 
 ## 3. High-Level Data Flow
 
-   ┌────────────────────────────────────────────────────────────────────────────┐
-   │                              Client / AI Agent                             │
-   └────────────────────────────────────────────────────────────────────────────┘
-                        │  query / context
-                        ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                         Scedge (Smart Cache on the Edge)                      │
-│ - Local semantic cache (intent + policy key)                                 │
-│ - Handles /lookup, /store, /purge                                            │
-│ - Policy and provenance validation                                           │
-│ - Returns cached result or forwards miss                                     │
-└───────────────────────────────────────────────────────────────────────────────┘
-                        │  cache miss / capsule
-                        ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                   Knowlemesh (Control Plane / Orchestrator)                   │
-│ - Tenant registry, RBAC, compliance                                           │
-│ - Policy enforcement + API gateway                                            │
-│ - Manages SynaGraph clusters + Scedge PoPs                                   │
-│ - Aggregates SeTGIN telemetry                                                 │
-└───────────────────────────────────────────────────────────────────────────────┘
-                        │  validated request
-                        ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                        SynaGraph (Knowledge Engine)                           │
-│ - Graph + vector + temporal storage                                           │
-│ - Provenance and supersede logic                                             │
-│ - Decay scheduler + reinforcement scoring                                    │
-│ - Exposes gRPC / REST APIs                                                   │
-│ - Publishes graph events via NATS/Kafka (for Scedge invalidation)            │
-└───────────────────────────────────────────────────────────────────────────────┘
-                        │  telemetry, metrics
-                        ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                   SeTGIN (Self-Tuning Graph Intelligence Network)             │
-│ - Collects latency / recall metrics                                           │
-│ - Adjusts PerfPolicy (top_k, τ, λ, etc.)                                     │
-│ - Federated learning across tenants                                           │
-│ - Feedback loop → Knowlemesh registry                                        │
-└───────────────────────────────────────────────────────────────────────────────┘
-                        │  optional re-inference
-                        ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                           GPU / LLM Cluster (Fallback)                        │
-│ - Generates new answers on cache miss                                        │
-│ - Results stored → SynaGraph → propagated → Scedge                           │
-└───────────────────────────────────────────────────────────────────────────────┘
+### End-to-End Overview
+```
+Client / AI Agent
+        │
+        │ 1️⃣  Query or context request
+        ▼
+┌─────────────────────────────────────────────┐
+│  Scedge – Smart Cache on the Edge           │
+│  • Local semantic cache (intent + policy)   │
+│  • /lookup, /store, /purge APIs             │
+│  • Policy + provenance validation           │
+│  • Returns cached result or forwards miss   │
+└─────────────────────────────────────────────┘
+        │
+        │ 2️⃣  Cache miss → Capsule request
+        ▼
+┌─────────────────────────────────────────────┐
+│  Knowlemesh – Control Plane / Orchestrator  │
+│  • Tenant registry, RBAC, compliance        │
+│  • Policy enforcement & API gateway         │
+│  • Manages SynaGraph clusters + Scedge PoPs │
+│  • Aggregates SeTGIN telemetry              │
+└─────────────────────────────────────────────┘
+        │
+        │ 3️⃣  Validated request → Knowledge lookup
+        ▼
+┌─────────────────────────────────────────────┐
+│  SynaGraph – Knowledge Engine               │
+│  • Graph + vector + temporal storage        │
+│  • Provenance & supersede logic             │
+│  • Temporal decay + reinforcement scoring   │
+│  • Publishes graph events (NATS/Kafka)      │
+└─────────────────────────────────────────────┘
+        │
+        │ 4️⃣  Metrics + events → Optimization
+        ▼
+┌─────────────────────────────────────────────┐
+│  SeTGIN – Self-Tuning Intelligence Network  │
+│  • Collects latency / recall metrics        │
+│  • Adjusts PerfPolicy (top_k, τ, λ, etc.)   │
+│  • Federated learning across tenants        │
+│  • Feedback loop → Knowlemesh registry      │
+└─────────────────────────────────────────────┘
+        │
+        │ 5️⃣  Optional re-inference on miss
+        ▼
+┌─────────────────────────────────────────────┐
+│  GPU / LLM Cluster – Fallback Layer         │
+│  • Generates new answers when unknown       │
+│  • Results stored → SynaGraph → Scedge      │
+└─────────────────────────────────────────────┘
+```
+
+### Summary of Flow
+
+1. **Client / Agent** sends query → Scedge tries semantic lookup.  
+2. **Scedge** serves hit instantly; on miss forwards capsule to Knowlemesh.  
+3. **Knowlemesh** validates policy and routes to SynaGraph.  
+4. **SynaGraph** executes graph/vector retrieval; emits events.  
+5. **SeTGIN** analyzes telemetry and tunes future performance.  
+6. **GPU / LLM Cluster** handles only truly novel or low-confidence requests.
+
 
 ---
 
