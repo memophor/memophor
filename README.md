@@ -22,7 +22,7 @@ Start with `synagraph` for the foundational storage engine, then explore `scedge
 
 ## 📚 Documentation & Learning Paths
 
-- [Architecture Overview](docs/architecture.md) — High-level system view and service boundaries.  
+- [Architecture Overview](docs/ARCHITECTURE.md) — High-level system view and service boundaries.  
 - [Technical Blueprint](docs/memophor-technical-blueprint.md) — Deep dive into components, data flows, and platform guarantees.  
 - [Open Core Strategy](docs/open-core-strategy.md) — How we balance open foundations with commercial offerings.  
 - [Roadmap](docs/roadmap.md) — Near-term priorities and longer-term milestones.  
