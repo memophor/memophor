@@ -4,7 +4,7 @@ Welcome to the local workspace for the Memophor platform. This directory holds t
 
 ## Repositories
 
-- **synagraph/** – Open-source synaptic graph engine responsible for storage, similarity search, temporal reinforcement, and policy-aware provenance. Licensed under Apache-2.0.
+- **synagraph/** – [Open-source synaptic graph engine](https://github.com/memophor/synagraph) responsible for storage, similarity search, temporal reinforcement, and policy-aware provenance. Licensed under Apache-2.0.
 - **knowlemesh/** – Commercial orchestration layer that exposes unified APIs, tenancy, policy enforcement, analytics, and lifecycle automation on top of SynaGraph clusters.
 - **scedge/** – Edge cache layer (“Scedge”) that delivers low-latency knowledge responses and enforces policy-aware invalidation closer to the user.
 - **docs/** – Shared documentation, architecture notes, and design decisions.
